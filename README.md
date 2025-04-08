@@ -95,7 +95,7 @@ The main ideas of the code are the following:
 <ul><li>Splitting of the dataset in train and test set (80/20%)</li>
 <li>The idea is to use a Boosted Decision Tree model whose hyperparameters are tuned using a Bayesian search</li>
 <li>The loss function is taken to be the Mean Absolute Error, reasonable for the regression task, and also because the Mean Squared Error is prone to the presence of outliers, leading to the fact that by changing the dataset splitting seed the loss of training and test set changes considerably</li>
-<li>The number of iterations of the bayesian search can be tuned with command line argument “–n_iters NUMBER_ITERATIONS”</li>
+<li>The number of iterations of the bayesian search can be tuned with command line argument “–n_iterations NUMBER_ITERATIONS”</li>
 <li>Hyperparameter tuning carried out on the train set, with cross validation (5-fold, but can be modified)</li>
 <li>After the tuning, the tuned model is trained on the train dataset and its performance is assessed on the test dataset</li>
 <li>The plots displaying the performance on the test dataset are reported in the “plots” folder they show the loss values of train and test dataset as a function of </li>boosting round, the SHAP values of the two output of the BDT and the residuals (predicted-truevalue) of PU_contamination and linking R</li>
