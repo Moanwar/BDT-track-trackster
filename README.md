@@ -11,14 +11,13 @@ To give an estimate of the PU contamination inside the linking radius
 
 In order to do this, the given code uses as input data which is SinglePion samples with PU = 200 . But in principle other samples can be used. 
 More specifically, the input are .root files with trees that are dumped by the TICLDumper.cc plugin, with some minor modifications in order to add the track position uncertainty to the dumper (thanks Mark for the help) .
-The commit of the code is the following. 
-https://github.com/cms-sw/cmssw/compare/master...Tizianop6:cmssw:trackPosUncertainty_TICLDumper 
+The commit of the code is the following: [commit](https://github.com/cms-sw/cmssw/compare/master...Tizianop6:cmssw:trackPosUncertainty_TICLDumper). 
 
 
-How to generate the samples: 
+## How to generate the samples: 
 
 Workflow used to generate the config files. 
-runTheMatrix.py -w upgrade -l 29688.203 -j 0
+> runTheMatrix.py -w upgrade -l 29688.203 -j 0
 
 Some modifications:
 
@@ -38,13 +37,13 @@ For instance, these are the commands that I’ve used:
 
 
 In order to activate the TICLDumper: add the following lines at the end of the step3
-from RecoHGCal.TICL.customiseTICLFromReco import customiseTICLForDumper
-process = customiseTICLForDumper(process)
+> from RecoHGCal.TICL.customiseTICLFromReco import customiseTICLForDumper
+> process = customiseTICLForDumper(process)
 
 
 
 
-How to run the dataset extraction and BDT training
+## How to run the dataset extraction and BDT training
 
 The github repository contains the code to carry out the BDT training, the script that needs to be run is make_BDT.py: one can use python3 make_BDT.py –help the see all the possible arguments that can be passed to the script. 
 In order to carry out the training one must
@@ -56,7 +55,7 @@ Train the model and assess performance
 
 
 
-BDT regression for trackster association analysis
+> BDT regression for trackster association analysis
 
 optional arguments:
   -h, --help        	show this help message and exit
@@ -78,22 +77,23 @@ python3 –do_all –folderlist ./histos/ ./histos_2/ -j 12
 
 
 
-Brief outline of the code
+## Brief outline of the code
 The main ideas of the code are the following:
-Load the trees coming the TICLDumper, in a given directory
-Consider the CaloParticles in the event (considered only CP from signal vertex, no PU CPs) 
-Find the track associated to the CP
-Then look at all the simTrackstersCP which are associated to that track
-Take all the simTrackstersCP and order them in ascending order in distance from the track position (in eta-phi) at the HGCAL entrance. The distance considered is the Delta R distance in eta-phi. 
-Look at the associator ticlTracksterLinks_recoToSim_CP_sharedE , and sum  the shared energy values between the ticlTracksterLinks and the CaloParticle. Define: R as the DeltaR value in which 80% of the total ticlTracksterLinks_recoToSim_CP_sharedE for that CaloParticle lies inside. 
-The energy must come from tracksterLinks which share a non zero amount of energy with the CP, not counting contamination. 
-Example to be clear: if I have a CaloParticle of 100 GeV, the radius R is the radius in which I reconstruct not necessarily 80 GeV from tracksters inside the radius, but it could be 87 GeV, 80 coming from the considered CP and 7 from contamination.  A more detailed decision whether to associate the single trackster inside the radius or not will be carried out using another technique. 
-The PU (or in general tracksters coming from other CPs) contamination is defined as 1-(reconstructed trackster energy shared with the CP inside the radius)/(total reconstructed trackster energy inside the radius)
-Other features, which are more straightforward to compute: 
-Track eta, phi, pT uncertainty on eta, phi and covariance of the two, pT uncertainty
-Energy and DeltaR distance of the closest trackster to the track
-Number of tracksters and sum of their energy inside DeltaR radiuses =0.005, 0.010, 0.030, 0.050
-Other features can be added eventually (like, DeltaR error of track as combination of error on phi and eta is already there, need to check correlation between phi and eta and see whether to include it or not) 
+<ol><li>Load the trees coming the TICLDumper, in a given directory</li>
+<li>Consider the CaloParticles in the event (considered only CP from signal vertex, no PU CPs) </li>
+<li>Find the track associated to the CP</li>
+<li>Then look at all the simTrackstersCP which are associated to that track</li>
+<li>Take all the simTrackstersCP and order them in ascending order in distance from the track position (in eta-phi) at the HGCAL entrance. The distance considered is the Delta R distance in eta-phi. </li>
+<li>Look at the associator ticlTracksterLinks_recoToSim_CP_sharedE , and sum  the shared energy values between the ticlTracksterLinks and the CaloParticle. Define: R as the DeltaR value in which 80% of the total ticlTracksterLinks_recoToSim_CP_sharedE for that CaloParticle lies inside. </li>
+<li>The energy must come from tracksterLinks which share a non zero amount of energy with the CP, not counting contamination. </li>
+<li>Example to be clear: if I have a CaloParticle of 100 GeV, the radius R is the radius in which I reconstruct not necessarily 80 GeV from tracksters inside the radius, but it could be 87 GeV, 80 coming from the considered CP and 7 from contamination.  A more detailed decision whether to associate the single trackster inside the radius or not will be carried out using another technique. </li>
+<li>The PU (or in general tracksters coming from other CPs) contamination is defined as 1-(reconstructed trackster energy shared with the CP inside the radius)/(total reconstructed trackster energy inside the radius) </li>
+<li>Other features, which are more straightforward to compute: </li>
+<ol><li>Track eta, phi, pT uncertainty on eta, phi and covariance of the two, pT uncertainty</li>
+<li>Energy and DeltaR distance of the closest trackster to the track</li>
+<li>Number of tracksters and sum of their energy inside DeltaR radiuses =0.005, 0.010, 0.030, 0.050</li>
+<li>Other features can be added eventually (like, DeltaR error of track as combination of error on phi and eta is already there, need to check correlation between phi and eta and see whether to include it or not) </li>
+</ol>
 Training of the network: 
 Splitting of the dataset in train and test set (80/20%)
 The idea is to use a Boosted Decision Tree model whose hyperparameters are tuned using a Bayesian search
@@ -102,15 +102,16 @@ The number of iterations of the bayesian search can be tuned with command line a
 Hyperparameter tuning carried out on the train set, with cross validation (5-fold, but can be modified)
 After the tuning, the tuned model is trained on the train dataset and its performance is assessed on the test dataset
 The plots displaying the performance on the test dataset are reported in the “plots” folder they show the loss values of train and test dataset as a function of boosting round, the SHAP values of the two output of the BDT and the residuals (predicted-truevalue) of PU_contamination and linking R
+</ol>
 Dependencies
 Python modules: 
-scikit-optimize (used scikit_optimize-0.10.2)
-shap
-XGboost 2.1.3 (some previous versions do not support dual output with MAE loss function)
+>scikit-optimize (used scikit_optimize-0.10.2)
+>shap
+>XGboost 2.1.3 (some previous versions do not support dual output with MAE loss function)
 Can do a requirements.txt file with this content:
-xgboost==2.1.3
-scikit-learn==1.3.2
+>xgboost==2.1.3
+>scikit-learn==1.3.2
 And then install with the following command
-pip install -r requirements.txt
+>pip install -r requirements.txt
 
 
