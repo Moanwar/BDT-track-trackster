@@ -104,15 +104,17 @@ The main ideas of the code are the following:
 <li>The plots displaying the performance on the test dataset are reported in the “plots” folder they show the loss values of train and test dataset as a function of </li>boosting round, the SHAP values of the two output of the BDT and the residuals (predicted-truevalue) of PU_contamination and linking R</li>
 </ul>
 </ol>
-Dependencies
+# Dependencies
+
 Python modules: 
->scikit-optimize (used scikit_optimize-0.10.2)
->shap
->XGboost 2.1.3 (some previous versions do not support dual output with MAE loss function)
+
+> scikit-optimize (used scikit_optimize-0.10.2)
+> shap
+> XGboost 2.1.3 (some previous versions do not support dual output with MAE loss function)
 Can do a requirements.txt file with this content:
->xgboost==2.1.3
->scikit-learn==1.3.2
+> xgboost==2.1.3
+> scikit-learn==1.3.2
 And then install with the following command
->pip install -r requirements.txt
+> pip install -r requirements.txt
 
 
