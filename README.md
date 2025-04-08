@@ -56,20 +56,20 @@ Train the model and assess performance
 
 
 > BDT regression for trackster association analysis
-
-optional arguments:
-  -h, --help        	show this help message and exit
-  --do_all          	Do all the work: load data, make plots, do bayesian search and train the model
-  --load_data       	(Re-)process .root files and save the dataset to a pickle file (BDT1_data.pkl)
-  --make_plots      	Make and save histograms of input features (saved in ./featureplots/)
-  --bayesiansearch  	Perform Bayesian hyperparameter search using training data
-  --train_validate  	Train final XGBoost model and make plots of residuals and SHAP values
-  -j N_JOBS, --n_jobs N_JOBS
-                    	Number of jobs to use for bayesian search (default: -1, same as CPU cores)
-  --n_iterations N_ITERATIONS
-                    	Number of iterations for Bayesian search (default: 50)
-  --folderlist FOLDERLIST [FOLDERLIST ...]
-                    	List of input folders with step3 ROOT files (default: ['./histos/'])
+>
+>optional arguments:
+>  -h, --help        	show this help message and exit
+>  --do_all          	Do all the work: load data, make plots, do bayesian search and train the model
+>  --load_data       	(Re-)process .root files and save the dataset to a pickle file (BDT1_data.pkl)
+>  --make_plots      	Make and save histograms of input features (saved in ./featureplots/)
+>  --bayesiansearch  	Perform Bayesian hyperparameter search using training data
+>  --train_validate  	Train final XGBoost model and make plots of residuals and SHAP values
+>  -j N_JOBS, --n_jobs N_JOBS
+>                    	Number of jobs to use for bayesian search (default: -1, same as CPU cores)
+>  --n_iterations N_ITERATIONS
+>                    	Number of iterations for Bayesian search (default: 50)
+>  --folderlist FOLDERLIST [FOLDERLIST ...]
+>                    	List of input folders with step3 ROOT files (default: ['./histos/'])
 
 For instance, assuming I have two directories with the samples and I want to run all the pipeline on 12 threads, a usage of the script can be the following:
 
@@ -89,19 +89,20 @@ The main ideas of the code are the following:
 <li>Example to be clear: if I have a CaloParticle of 100 GeV, the radius R is the radius in which I reconstruct not necessarily 80 GeV from tracksters inside the radius, but it could be 87 GeV, 80 coming from the considered CP and 7 from contamination.  A more detailed decision whether to associate the single trackster inside the radius or not will be carried out using another technique. </li>
 <li>The PU (or in general tracksters coming from other CPs) contamination is defined as 1-(reconstructed trackster energy shared with the CP inside the radius)/(total reconstructed trackster energy inside the radius) </li>
 <li>Other features, which are more straightforward to compute: </li>
-<ol><li>Track eta, phi, pT uncertainty on eta, phi and covariance of the two, pT uncertainty</li>
+<ul><li>Track eta, phi, pT uncertainty on eta, phi and covariance of the two, pT uncertainty</li>
 <li>Energy and DeltaR distance of the closest trackster to the track</li>
 <li>Number of tracksters and sum of their energy inside DeltaR radiuses =0.005, 0.010, 0.030, 0.050</li>
 <li>Other features can be added eventually (like, DeltaR error of track as combination of error on phi and eta is already there, need to check correlation between phi and eta and see whether to include it or not) </li>
-</ol>
-Training of the network: 
-Splitting of the dataset in train and test set (80/20%)
-The idea is to use a Boosted Decision Tree model whose hyperparameters are tuned using a Bayesian search
-The loss function is taken to be the Mean Absolute Error, reasonable for the regression task, and also because the Mean Squared Error is prone to the presence of outliers, leading to the fact that by changing the dataset splitting seed the loss of training and test set changes considerably
-The number of iterations of the bayesian search can be tuned with command line argument “–n_iters NUMBER_ITERATIONS”
-Hyperparameter tuning carried out on the train set, with cross validation (5-fold, but can be modified)
-After the tuning, the tuned model is trained on the train dataset and its performance is assessed on the test dataset
-The plots displaying the performance on the test dataset are reported in the “plots” folder they show the loss values of train and test dataset as a function of boosting round, the SHAP values of the two output of the BDT and the residuals (predicted-truevalue) of PU_contamination and linking R
+</ul>
+<li>Training of the network: </li>
+<ul><li>Splitting of the dataset in train and test set (80/20%)</li>
+<li>The idea is to use a Boosted Decision Tree model whose hyperparameters are tuned using a Bayesian search</li>
+<li>The loss function is taken to be the Mean Absolute Error, reasonable for the regression task, and also because the Mean Squared Error is prone to the presence of outliers, leading to the fact that by changing the dataset splitting seed the loss of training and test set changes considerably</li>
+<li>The number of iterations of the bayesian search can be tuned with command line argument “–n_iters NUMBER_ITERATIONS”</li>
+<li>Hyperparameter tuning carried out on the train set, with cross validation (5-fold, but can be modified)</li>
+<li>After the tuning, the tuned model is trained on the train dataset and its performance is assessed on the test dataset</li>
+<li>The plots displaying the performance on the test dataset are reported in the “plots” folder they show the loss values of train and test dataset as a function of </li>boosting round, the SHAP values of the two output of the BDT and the residuals (predicted-truevalue) of PU_contamination and linking R</li>
+</ul>
 </ol>
 Dependencies
 Python modules: 
