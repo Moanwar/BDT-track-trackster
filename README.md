@@ -1,4 +1,4 @@
-** BDT to compute linking radius and PU contamination in order to link tracksters in HGCAL with tracks reconstructed in the CMS tracker **
+**BDT to compute linking radius and PU contamination in order to link tracksters in HGCAL with tracks reconstructed in the CMS tracker**
 Look at updated documentation with formatting, in drive, [here](https://docs.google.com/document/d/1qcI5ugK9bQdd3UMzZesJZUQN1z4YZ2bKjOm6277GlgE/edit?usp=sharing)
 # Documentation for the training of the BDT for track-trackster linking in HGCAL
 
@@ -57,20 +57,19 @@ Train the model and assess performance
 
 
 > BDT regression for trackster association analysis
->
->optional arguments:
->  -h, --help        	show this help message and exit
->  --do_all          	Do all the work: load data, make plots, do bayesian search and train the model
->  --load_data       	(Re-)process .root files and save the dataset to a pickle file (BDT1_data.pkl)
->  --make_plots      	Make and save histograms of input features (saved in ./featureplots/)
->  --bayesiansearch  	Perform Bayesian hyperparameter search using training data
->  --train_validate  	Train final XGBoost model and make plots of residuals and SHAP values
->  -j N_JOBS, --n_jobs N_JOBS
->                    	Number of jobs to use for bayesian search (default: -1, same as CPU cores)
->  --n_iterations N_ITERATIONS
->                    	Number of iterations for Bayesian search (default: 50)
->  --folderlist FOLDERLIST [FOLDERLIST ...]
->                    	List of input folders with step3 ROOT files (default: ['./histos/'])
+optional arguments:
+  -h, --help        	show this help message and exit
+  --do_all          	Do all the work: load data, make plots, do bayesian search and train the model
+  --load_data       	(Re-)process .root files and save the dataset to a pickle file (BDT1_data.pkl)
+  --make_plots      	Make and save histograms of input features (saved in ./featureplots/)
+  --bayesiansearch  	Perform Bayesian hyperparameter search using training data
+  --train_validate  	Train final XGBoost model and make plots of residuals and SHAP values
+  -j N_JOBS, --n_jobs N_JOBS
+                    	Number of jobs to use for bayesian search (default: -1, same as CPU cores)
+  --n_iterations N_ITERATIONS
+                    	Number of iterations for Bayesian search (default: 50)
+  --folderlist FOLDERLIST [FOLDERLIST ...]
+                    	List of input folders with step3 ROOT files (default: ['./histos/'])
 
 For instance, assuming I have two directories with the samples and I want to run all the pipeline on 12 threads, a usage of the script can be the following:
 
