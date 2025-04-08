@@ -56,24 +56,24 @@ Train the model and assess performance
 
 
 
-> BDT regression for trackster association analysis
-optional arguments:
-  -h, --help        	show this help message and exit
-  --do_all          	Do all the work: load data, make plots, do bayesian search and train the model
-  --load_data       	(Re-)process .root files and save the dataset to a pickle file (BDT1_data.pkl)
-  --make_plots      	Make and save histograms of input features (saved in ./featureplots/)
-  --bayesiansearch  	Perform Bayesian hyperparameter search using training data
-  --train_validate  	Train final XGBoost model and make plots of residuals and SHAP values
-  -j N_JOBS, --n_jobs N_JOBS
-                    	Number of jobs to use for bayesian search (default: -1, same as CPU cores)
-  --n_iterations N_ITERATIONS
-                    	Number of iterations for Bayesian search (default: 50)
-  --folderlist FOLDERLIST [FOLDERLIST ...]
-                    	List of input folders with step3 ROOT files (default: ['./histos/'])
+> BDT regression for trackster association analysis  
+optional arguments:  
+  -h, --help        	show this help message and exit  
+  --do_all          	Do all the work: load data, make plots, do bayesian search and train the model  
+  --load_data       	(Re-)process .root files and save the dataset to a pickle file (BDT1_data.pkl)  
+  --make_plots      	Make and save histograms of input features (saved in ./featureplots/)  
+  --bayesiansearch  	Perform Bayesian hyperparameter search using training data  
+  --train_validate  	Train final XGBoost model and make plots of residuals and SHAP values  
+  -j N_JOBS, --n_jobs N_JOBS  
+                    	Number of jobs to use for bayesian search (default: -1, same as CPU cores)  
+  --n_iterations N_ITERATIONS  
+                    	Number of iterations for Bayesian search (default: 50)  
+  --folderlist FOLDERLIST [FOLDERLIST ...]  
+                    	List of input folders with step3 ROOT files (default: ['./histos/'])  
 
 For instance, assuming I have two directories with the samples and I want to run all the pipeline on 12 threads, a usage of the script can be the following:
 
-python3 –do_all –folderlist ./histos/ ./histos_2/ -j 12 
+> python3 –do_all –folderlist ./histos/ ./histos_2/ -j 12 
 
 
 
