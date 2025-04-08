@@ -1,4 +1,5 @@
-BDT to compute linking radius and PU contamination in order to link tracksters in HGCAL with tracks reconstructed in the CMS tracker
+** BDT to compute linking radius and PU contamination in order to link tracksters in HGCAL with tracks reconstructed in the CMS tracker **
+Look at updated documentation with formatting, in drive, [here](https://docs.google.com/document/d/1qcI5ugK9bQdd3UMzZesJZUQN1z4YZ2bKjOm6277GlgE/edit?usp=sharing)
 # Documentation for the training of the BDT for track-trackster linking in HGCAL
 
 ### Objective: optimizing the linking performance of tracks with tracksters in HGCAL..
@@ -111,10 +112,14 @@ Python modules:
 > scikit-optimize (used scikit_optimize-0.10.2)
 > shap
 > XGboost 2.1.3 (some previous versions do not support dual output with MAE loss function)
+
 Can do a requirements.txt file with this content:
+
 > xgboost==2.1.3
 > scikit-learn==1.3.2
+
 And then install with the following command
+
 > pip install -r requirements.txt
 
 
