@@ -64,12 +64,9 @@ optional arguments:
   --make_plots      	Make and save histograms of input features (saved in ./featureplots/)  
   --bayesiansearch  	Perform Bayesian hyperparameter search using training data  
   --train_validate  	Train final XGBoost model and make plots of residuals and SHAP values  
-  -j N_JOBS, --n_jobs N_JOBS  
-                    	Number of jobs to use for bayesian search (default: -1, same as CPU cores)  
-  --n_iterations N_ITERATIONS  
-                    	Number of iterations for Bayesian search (default: 50)  
-  --folderlist FOLDERLIST [FOLDERLIST ...]  
-                    	List of input folders with step3 ROOT files (default: ['./histos/'])  
+  -j N_JOBS, --n_jobs N_JOBS   Number of jobs to use for bayesian search (default: -1, same as CPU cores)  
+  --n_iterations N_ITERATIONS 	Number of iterations for Bayesian search (default: 50)  
+  --folderlist FOLDERLIST [FOLDERLIST ...]  List of input folders with step3 ROOT files (default: ['./histos/'])  
 
 For instance, assuming I have two directories with the samples and I want to run all the pipeline on 12 threads, a usage of the script can be the following:
 
