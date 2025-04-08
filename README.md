@@ -105,13 +105,13 @@ The main ideas of the code are the following:
 
 Python modules: 
 
-> scikit-optimize (used scikit_optimize-0.10.2)
-> shap
-> XGboost 2.1.3 (some previous versions do not support dual output with MAE loss function)
+> scikit-optimize (used scikit_optimize-0.10.2)  
+> shap  
+> XGboost 2.1.3 (some previous versions do not support dual output with MAE loss function)  
 
 Can do a requirements.txt file with this content:
 
-> xgboost==2.1.3
+> xgboost==2.1.3  
 > scikit-learn==1.3.2
 
 And then install with the following command
