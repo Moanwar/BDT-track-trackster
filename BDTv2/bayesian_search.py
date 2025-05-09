@@ -1,0 +1,61 @@
+
+from xgboost import XGBRegressor
+from sklearn.model_selection import GridSearchCV
+import xgboost as xgb
+import pandas as pd
+from skopt import BayesSearchCV
+from sklearn.metrics import mean_squared_error
+import pickle
+import matplotlib.pyplot as plt
+#def bayesian_search(X_train, y_train, X_test,y_test, n_iterations,n_cores):
+def bayesian_search(X_train, y_train, w_train,X_test,y_test,w_test,n_iterations,n_cores):
+    
+    xgb_reg = XGBRegressor(objective='reg:absoluteerror')
+    xgb_reg._estimator_type = "regressor"  
+
+    
+    #dictionary of parameters to be optimized w/ definition of ranges
+    param_grid = {
+        'max_depth': (1, 10),  #discrete (integer) range
+        'eta': (0.001, 0.5, 'log-uniform'),  # log-uniform to explore in logarithmic scale
+        'subsample': (0.1, 1.0),  #continuos reange for this and next hyperparameters
+        'colsample_bytree': (0.2, 1.0),  
+        'gamma': (0.0, 10),  
+        'lambda': (1.0, 50.0),  
+        'alpha': (0.0, 50.),  
+        'n_estimators': (10, 700)
+        }
+    
+    # Configure BayesSearchCV
+    bayes_search = BayesSearchCV(
+        estimator=xgb_reg,
+        search_spaces=param_grid,
+        scoring='neg_mean_absolute_error', 
+        n_iter=n_iterations,  # Number of iterations
+        cv=5,  # 5-fold cross-validation
+        n_jobs=n_cores,  # if -1 usage of all the available cores, 
+        verbose=0,
+        #random_state=42  # For reproducibility
+    )
+    
+    #do bayesian search
+    bayes_search.fit(X_train, y_train)
+    
+    #possibility to print best hyperparameters and loss score
+    print("Best hyperparameters found:", bayes_search.best_params_)
+    #print("best loss score found (neg_mean_absolute_error):", bayes_search.best_score_)
+    
+    
+    #train the final model with the best parameters
+    best_xgb = bayes_search.best_estimator_
+    
+    #predict on the test data
+    y_pred = best_xgb.predict(X_test)
+    
+    #calculate MSE on the test set
+    mse = mean_squared_error(y_test, y_pred)
+    print(f"Mean Squared Error on test data: {mse}")
+    best_xgb.save_model("BDT1_Bayes.json")
+    
+    with open('BDT1_best_params.pkl', 'wb') as handle:
+        pickle.dump(bayes_search.best_params_, handle, protocol=pickle.HIGHEST_PROTOCOL)
