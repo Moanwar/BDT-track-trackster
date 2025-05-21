@@ -13,6 +13,7 @@ from sklearn.metrics import mean_squared_error
 #'n_estimators': 600
 
 def train_and_validate_model(X_train, X_test, y_train, y_test, w_train, w_test,train_dmatrix,test_dmatrix,params_in):
+
     if not os.path.exists("plots"):
         os.makedirs("plots")
 
@@ -186,6 +187,11 @@ def train_and_validate_model(X_train, X_test, y_train, y_test, w_train, w_test,t
         if name == 'R':
             true_vals = np.exp(y_test[name])
             pred_vals = np.exp(y_pred[:, idx])
+            #true_vals = np.expm1(y_test[name])
+            #pred_vals = np.expm1(y_pred[:, idx])
+            #true_vals = y_test[name]
+            #pred_vals = y_pred[:, idx]
+
         else:
             true_vals = y_test[name]
             pred_vals = y_pred[:, idx]
@@ -196,11 +202,130 @@ def train_and_validate_model(X_train, X_test, y_train, y_test, w_train, w_test,t
         plt.xlabel(f'True {name}')
         plt.ylabel(f'Predicted {name}')
         plt.title(f'Predicted vs True {name}')
-        plt.xlim(xlims[name])
-        plt.ylim(xlims[name])
+        #plt.xlim(xlims[name])
+        #plt.ylim(xlims[name])
         plt.grid(True)
         plt.legend()
         
         plt.tight_layout()
         plt.savefig(f"/eos/user/m/moanwar/www/linking/bdt_plots/plots/featureplots/Predicted_{name}.png", dpi=300)
         plt.close()
+
+    #true_vals = np.expm1(y_test['R'])
+    #pred_vals = np.expm1(y_pred[:, targets['R']])
+    true_vals = np.exp(y_test['R'])
+    pred_vals = np.exp(y_pred[:, targets['R']])
+
+    # New loop for the requested combined plots
+    plt.figure(figsize=(8, 6))
+    plt.scatter(y_test['contamination'] ,true_vals,  alpha=0.4, label='', color='blue')
+    plt.xlabel('True Contamination')
+    plt.ylabel('True R')
+    plt.title('True R vs True Contamination')
+    plt.ylim(0,0.5) 
+    plt.grid(True)
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(f"/eos/user/m/moanwar/www/linking/bdt_plots/plots/featureplots/TrueR_vs_TrueContamination.png", dpi=300)
+    plt.close()
+    
+    plt.figure(figsize=(8, 6))
+    plt.scatter(y_test['contamination'] ,pred_vals, alpha=0.4, label='', color='green')
+    plt.xlabel('True Contamination')
+    plt.ylabel('Predicted R')
+    plt.title('True Contamination vs Predicted R')
+    plt.ylim(0,0.5)
+    plt.grid(True)
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(f"/eos/user/m/moanwar/www/linking/bdt_plots/plots/featureplots/PredR_vs_TrueContamination.png", dpi=300)
+    plt.close()
+    
+    plt.figure(figsize=(8, 6))
+    plt.scatter(y_pred[:, targets['contamination']], pred_vals, alpha=0.4, label='', color='purple')
+    plt.xlabel('Predicted Contamination')
+    plt.ylabel('Predicted R')
+    plt.title('Predicted Contamination vs Predicted R')
+    plt.ylim(0,0.5)
+    plt.grid(True)
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(f"/eos/user/m/moanwar/www/linking/bdt_plots/plots/featureplots/PredContamination_vs_PredR.png", dpi=300)
+    plt.close()
+    
+    plt.figure(figsize=(8, 6))
+    plt.scatter(y_test['contamination'], y_pred[:, targets['contamination']], alpha=0.4, label='True vs Predicted Contamination', color='red')
+    plt.xlabel('True Contamination')
+    plt.ylabel('Predicted Contamination')
+    plt.title('True vs Predicted Contamination')
+    plt.plot([y_test['contamination'].min(), y_test['contamination'].max()],
+         [y_test['contamination'].min(), y_test['contamination'].max()],
+             'k--', lw=2, label='Ideal')
+    plt.grid(True)
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(f"/eos/user/m/moanwar/www/linking/bdt_plots/plots/featureplots/True_vs_PredContamination.png", dpi=300)
+    plt.close()
+
+
+    plt.figure(figsize=(8, 6))
+    plt.scatter(true_vals, pred_vals, alpha=0.4, label=' ', color='red')
+    plt.xlabel('True R')
+    plt.ylabel('Predicted R')
+    plt.title('True vs Predicted R')
+    plt.grid(True)
+    plt.ylim(0,0.2)
+    plt.xlim(0,0.2)
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(f"/eos/user/m/moanwar/www/linking/bdt_plots/plots/featureplots/True_vs_PredR.png", dpi=300)
+    plt.close()
+
+    residuals = pred_vals - true_vals
+
+    plt.figure(figsize=(8, 6))
+    plt.scatter(true_vals, residuals, alpha=0.4, color='purple')
+    plt.axhline(y=0, color='k', linestyle='--', lw=1, label='Zero Residual') # Line for zero error
+    plt.xlabel('True R')
+    plt.ylabel('Predicted R - True R (Residuals)')
+    plt.title('Residual Plot (Predicted - True) vs True R')
+    plt.xlim(0,0.5)
+    plt.grid(True)
+    # plt.ylim(-0.1, 0.1) # Adjust y-limits as needed
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(f"/eos/user/m/moanwar/www/linking/bdt_plots/plots/featureplots/Residuals_vs_TrueR.png", dpi=300)
+    plt.close()
+
+    residuals = pred_vals - true_vals
+
+    plt.figure(figsize=(8, 6))
+    plt.hist(residuals, bins=50, alpha=0.7, color='orange', edgecolor='black')
+    plt.xlabel('Predicted R - True R (Residuals)')
+    plt.ylabel('Frequency')
+    plt.title('Histogram of Residuals')
+    plt.xlim(-0.5,0.5)
+    plt.grid(True, alpha=0.6)
+    plt.tight_layout()
+    plt.savefig(f"/eos/user/m/moanwar/www/linking/bdt_plots/plots/featureplots/ResidualHistogram_R.png", dpi=300)
+    plt.close()
+
+    #true_r = np.expm1(y_test['R'])
+    #pred_r = np.expm1(y_pred[:, targets['R']])
+    # Avoid division by zero by adding a small epsilon if necessary
+    epsilon = 1e-6
+    response = pred_vals / (true_vals + epsilon)
+
+    plt.figure(figsize=(8, 6))
+    plt.scatter(true_vals, response, alpha=0.4, color='brown')
+    plt.axhline(y=1, color='k', linestyle='--', lw=1, label='Ideal Response')
+    plt.xlabel('True R')
+    plt.ylabel('Predicted R / True R (Response)')
+    plt.title('Response Plot vs True R')
+    plt.xlim(0,0.5)
+    plt.grid(True)
+    # plt.ylim(0.5, 1.5) # Adjust y-limits as needed
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(f"/eos/user/m/moanwar/www/linking/bdt_plots/plots/featureplots/Response_vs_TrueR.png", dpi=300)
+    plt.close()

@@ -15,7 +15,7 @@ def save_histos_to_file(data_dict):
         if not values:  # If the list is empty, skip
             print(f"Empty list for '{key}', no histogram done.")
             continue
-
+        print(" plotting is : ", key)
         #plotting single features 
         plt.figure(figsize=(10, 6))
         plt.hist(values, bins=100, alpha=1.0, log=True)

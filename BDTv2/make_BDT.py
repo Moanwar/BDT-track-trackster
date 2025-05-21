@@ -19,8 +19,8 @@ from make_dataset_v2 import make_dataset
 from plotting import save_histos_to_file
 from train import train_and_validate_model
 from bayesian_search import bayesian_search
-
-
+from bayesian_search_multitarget import bayesian_search_multitarget
+from inference import run_inference
 from xgboost import XGBRegressor
 from sklearn.model_selection import GridSearchCV
 import sys
@@ -47,6 +47,9 @@ parser.add_argument("--train_validate", action="store_true", help="Train final X
 parser.add_argument("-j", "--n_jobs",type=int,default=-1, help="Number of jobs to use for bayesian search (default: -1, same as CPU cores)")
 parser.add_argument("--n_iterations", type=int, default=50, help="Number of iterations for Bayesian search (default: 50)")
 parser.add_argument("--folderlist", nargs="+", default=["./histos/"], help="List of input folders with step3 ROOT files (default: ['./histos/'])")
+parser.add_argument("--multitarget", action="store_true", help="Perform Bayesian hyperparameter search using training data multitarget")
+
+parser.add_argument("--inference", action="store_true", help="Perform Bayesian hyperparameter search using training data multitarget")
 
 args = parser.parse_args()
 load_data = args.load_data
@@ -56,6 +59,8 @@ train_validate = args.train_validate
 n_cores = args.n_jobs
 n_iterations = args.n_iterations
 folderlist = args.folderlist
+multitarget = args.multitarget
+inference = args.inference
 if args.do_all:
     load_data = True
     make_plots = True
@@ -71,36 +76,53 @@ if load_data:
 with open('BDT1_data.pkl', 'rb') as file:
     dict_info=pickle.load(file)
 
+#for key in dict_info:
+#    print(f"{key}: {len(dict_info[key])}")
+print(f"Number of data points {len(dict_info['eta_trk'])}")
 if make_plots:
     save_histos_to_file(dict_info)
-
-print(f"Number of data points {len(dict_info['eta_trk'])}")
 
 #converting dictionaty to dataframe in order to use it with xgboost
 df = pd.DataFrame(dict_info)
 
-df_features = df[["eta_trk","phi_trk","pt_trk","etaErr","phiErr","deltaR_trk","etaphiCov","en_trk","time_mtd_trk","timeErr_mtd_trk","x_mtd_trk","y_mtd_trk","z_mtd_trk", "beta_trk", "nhits_trk", "outer_hits_trk", "inner_hits_trk", "time_trk", "time_quality_trk", "hgcal_pt_trk","hgcal_xyCov_trk", "hgcal_yErr_trk", "hgcal_xErr_trk", "hgcal_x_trk", "hgcal_y_trk", "hgcal_z_trk"]]
+#df_features = df[["eta_trk","phi_trk","pt_trk","etaErr","phiErr","deltaR_trk","etaphiCov","en_trk","time_mtd_trk","timeErr_mtd_trk","x_mtd_trk","y_mtd_trk","z_mtd_trk", "beta_trk", "nhits_trk", "outer_hits_trk", "inner_hits_trk", "time_trk", "time_quality_trk", "hgcal_pt_trk","hgcal_xyCov_trk", "hgcal_yErr_trk", "hgcal_xErr_trk", "hgcal_x_trk", "hgcal_y_trk", "hgcal_z_trk"]]
 
-df_label = df[['R', 'contamination']]#,'Rpull', 'MTDvalue']]
+df_features = df[["eta_trk","phiErr","en_trk","pt_trk","hgcal_pt_trk","beta_trk","hgcal_xErr_trk","outer_hits_trk","hgcal_yErr_trk","time_quality_trk","y_mtd_trk","time_mtd_trk","x_mtd_trk","nhits_trk"]]
+
+
+#df_label = df[['R', 'contamination', 'logP1R', 'logR']]#,'Rpull', 'MTDvalue']]
+df_label = df[['logP1R']]
 df_weights=df[["simEnergy"]]
 #df_weights = 1 / (np.expm1(df[["R"]]))
-
-
+contamination = df["contamination"]
 #split in training and test sets, weight given by the simEnergy
-X_train, X_test, y_train, y_test, w_train, w_test = train_test_split(df_features, df_label, df_weights, test_size=0.2, random_state=32)
+#X_train, X_test, y_train, y_test, w_train, w_test = train_test_split(df_features, df_label, df_weights, test_size=0.2, random_state=32)
 #X_train, X_test, y_train, y_test = train_test_split(df_features, df_label, test_size=0.2, random_state=32)
+X_train, X_test, y_train, y_test, w_train, w_test, contamination_train, contamination_test = train_test_split(
+    df_features, df_label, df_weights, contamination, test_size=0.2, random_state=32
+)
 
 # Compute weights using original R (you must keep it in the DataFrame!)
 #convert to DMatrix format for xgboost
 train_dmatrix = xgb.DMatrix(X_train, label=y_train, weight=w_train)
 test_dmatrix = xgb.DMatrix(X_test, label=y_test, weight=w_test)
 
-
+if multitarget:
+    bayesian_search_multitarget(X_train, y_train, w_train,
+                                X_test, y_test, w_test,
+                                n_iterations, n_cores)
 if bayesiansearch:
     bayesian_search(X_train, y_train, w_train,X_test,y_test,w_test,n_iterations,n_cores)
 
-with open('BDT1_best_params.pkl', 'rb') as file:
-    best_params=pickle.load(file)
-
 if train_validate:
+
+    with open('BDT1_best_params.pkl', 'rb') as file:
+        best_params=pickle.load(file)
+        
     train_and_validate_model(X_train, X_test, y_train, y_test, w_train, w_test, train_dmatrix, test_dmatrix, best_params)
+
+if inference:
+    with open('BDT1_best_params.pkl', 'rb') as file:
+        best_params=pickle.load(file)
+
+    run_inference(X_train, X_test, y_train, y_test, w_train, w_test, train_dmatrix, test_dmatrix, best_params, contamination_train, contamination_test)
